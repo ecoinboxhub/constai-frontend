@@ -1,0 +1,15 @@
+# Netlify Configuration for ConstructionAI Frontend
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Omit these public keys from Netlify's secret scanning to prevent build failure.
+  # These are Supabase 'anon' keys intended for client-side use.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
+
+# Ensure Next.js client-side routing works on refresh
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

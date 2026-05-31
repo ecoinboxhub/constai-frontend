@@ -1,0 +1,12 @@
+src/components/auth-context.tsx(4,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/auth-context.tsx(38,79): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/pages/MVPModules.tsx(4,3): error TS6133: 'Target' is declared but its value is never read.
+src/pages/MVPModules.tsx(6,3): error TS6133: 'AlertTriangle' is declared but its value is never read.
+src/pages/MVPModules.tsx(14,3): error TS6133: 'CheckCircle' is declared but its value is never read.
+src/pages/MVPModules.tsx(91,11): error TS6196: 'RAGResponse' is declared but never used.
+src/pages/MVPModules.tsx(141,10): error TS6133: 'analyticsConnected' is declared but its value is never read.
+src/pages/MVPModules.tsx(143,10): error TS6133: 'ragLoading' is declared but its value is never read.
+src/pages/MVPModules.tsx(143,22): error TS6133: 'setRagLoading' is declared but its value is never read.
+src/pages/MVPModules.tsx(146,10): error TS6133: 'ragAnswer' is declared but its value is never read.
+src/pages/MVPModules.tsx(146,21): error TS6133: 'setRagAnswer' is declared but its value is never read.
+src/pages/MVPModules.tsx(311,13): error TS6133: 'res' is declared but its value is never read.
