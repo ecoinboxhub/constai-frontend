@@ -1,8 +1,19 @@
 import axios from "axios";
 import { trackUIEvent } from "@/lib/uiEventTracker";
 
+// Normalize base URL: ensure API prefix `/api/v1` is present and default to port 8008
+const rawBase: string = (import.meta as any).env.VITE_API_URL || "http://localhost:8008/api/v1";
+let baseURL = rawBase;
+try {
+  if (!baseURL.endsWith("/api/v1")) {
+    baseURL = baseURL.replace(/\/+$/, "") + "/api/v1";
+  }
+} catch (e) {
+  baseURL = "http://localhost:8008/api/v1";
+}
+
 const api = axios.create({
-  baseURL: (import.meta as any).env.VITE_API_URL || "http://localhost:8000/api/v1",
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },

@@ -27,7 +27,7 @@ npm run dev
 - Predictive analytics
 
 ## API Integration
-- Backend: `http://localhost:8000/api/v1`
+- Backend: `http://localhost:8008/api/v1`
 - Configure via `.env.local` file
 
 ## Deployment
