@@ -8,10 +8,18 @@ import RegisterPage from "./pages/Register";
 import NotFoundPage from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import DocumentAnalyzer from "./pages/DocumentAnalyzer";
+import { useAuth } from "./components/auth-context";
 
 const ProtectedRoute = () => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+  return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 const DashboardLayout = () => {

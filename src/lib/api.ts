@@ -1,7 +1,6 @@
 import axios from "axios";
 import { trackUIEvent } from "@/lib/uiEventTracker";
 
-// Normalize base URL: ensure API prefix `/api/v1` is present and default to port 8008
 const rawBase: string = (import.meta as any).env.VITE_API_URL || "http://localhost:8008/api/v1";
 let baseURL = rawBase;
 try {
@@ -19,7 +18,6 @@ const api = axios.create({
   },
 });
 
-// Add Interceptor for JWT tokens and API diagnostics
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
@@ -27,13 +25,10 @@ api.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
-
   trackUIEvent("api_request", {
     method: config.method,
     url: config.baseURL ? `${config.baseURL}${config.url}` : config.url,
-    data: config.data,
   });
-
   return config;
 });
 
@@ -42,18 +37,14 @@ api.interceptors.response.use(
     trackUIEvent("api_response", {
       status: response.status,
       url: response.config.url,
-      data: response.data,
     });
     return response;
   },
   (error) => {
-    const response = error?.response;
-    trackUIEvent("api_error", {
-      message: error?.message,
-      url: response?.config?.url || error?.config?.url,
-      status: response?.status,
-      data: response?.data,
-    });
+    if (error?.response?.status === 401 && typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
     return Promise.reject(error);
   }
 );

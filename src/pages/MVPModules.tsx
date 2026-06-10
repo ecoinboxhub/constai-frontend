@@ -162,6 +162,7 @@ export function ProjectTracker() {
   const [selectedCity, setSelectedCity] = useState("Lagos");
   const [weather, setWeather] = useState<any>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
+  const [selectedChatProject] = useState<number>(1);
 
   useEffect(() => {
     loadDashboard();
@@ -376,8 +377,8 @@ export function ProjectTracker() {
     setChatMessages((prev) => [...prev, { role: "user", content: `[RAG QUERY] ${chatInput}` }]);
     setChatLoading(true);
     try {
-      // Hardcoding project_id to 1 for MVP if not specified
-      const res = await api.post("/project-tracker/rag/query", { project_id: 1, question: chatInput });
+      const pid = selectedChatProject;
+      const res = await api.post("/project-tracker/rag/query", { project_id: pid, question: chatInput });
       setChatMessages((prev) => [...prev, { role: "assistant", content: res.data.answer }]);
       setChatInput("");
     } catch (err) {
