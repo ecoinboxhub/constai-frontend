@@ -8,6 +8,7 @@ import RegisterPage from "./pages/Register";
 import NotFoundPage from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import DocumentAnalyzer from "./pages/DocumentAnalyzer";
+import MLAdmin from "./pages/MLAdmin";
 import { useAuth } from "./components/auth-context";
 
 const ProtectedRoute = () => {
@@ -122,6 +123,10 @@ function App() {
                   icon="tender"
                 />
               }
+            />
+            <Route
+              path="ml-admin"
+              element={<MLAdmin />}
             />
             <Route
               path="settings"

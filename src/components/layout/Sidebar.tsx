@@ -13,7 +13,8 @@ import {
   Wrench,
   Activity,
   Search,
-  Settings
+  Settings,
+  Brain
 } from "lucide-react";
 
 import { clsx, type ClassValue } from "clsx";
@@ -42,6 +43,7 @@ const groups = [
       { name: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
       { name: "Progress Vision", href: "/dashboard/progress", icon: Activity },
       { name: "Tender Analyzer", href: "/dashboard/tender", icon: Search },
+      { name: "ML Admin", href: "/dashboard/ml-admin", icon: Brain },
       { name: "Integration", href: "/dashboard/settings", icon: Settings },
     ]
   }
@@ -97,7 +99,7 @@ export default function Sidebar() {
             <div className="space-y-1">
               {group.items.map((item) => {
                 const isActive = pathname === item.href;
-                const isComingSoon = item.href.includes('/dashboard/') && item.href !== '/dashboard/projects';
+                const isComingSoon = item.href.includes('/dashboard/') && !['/dashboard/projects', '/dashboard/ml-admin'].includes(item.href);
                 
                 return (
                   <Link

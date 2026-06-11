@@ -31,5 +31,5 @@ npm run dev
 - Configure via `.env.local` file
 
 ## Deployment
-- Deploy to Netlify, Vercel, or any static hosting
+- Deploy to Vercel (primary), Netlify, or any static hosting
 - Configure `VITE_API_URL` for production
