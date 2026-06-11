@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Brain, Activity, BarChart3, Settings, RefreshCw,
+  Brain, BarChart3, Settings, RefreshCw,
   CheckCircle, XCircle, AlertTriangle, Loader2,
 } from "lucide-react";
 import api from "@/lib/api";
@@ -34,10 +34,6 @@ interface StatsData {
   will_delay_pct: number;
   model_version_counts: Record<string, number>;
   recent_daily_counts: { date: string; count: number; avg_delay_risk: number }[];
-}
-
-interface ConfigData {
-  model_config: Record<string, string>;
 }
 
 function HealthTab() {
