@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { 
+import {
   LayoutDashboard,
-  Target, 
-  Calculator, 
-  ShieldAlert, 
+  Target,
+  Calculator,
+  ShieldAlert,
   ChevronLeft,
   Menu,
   FileText,
@@ -14,7 +14,10 @@ import {
   Activity,
   Search,
   Settings,
-  Brain
+  Brain,
+  Newspaper,
+  BookOpen,
+  ChevronDown,
 } from "lucide-react";
 
 import { clsx, type ClassValue } from "clsx";
@@ -24,119 +27,187 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const groups = [
-  {
-    name: "Navigation",
-    items: [
-      { name: "Intelligence Hub", href: "/dashboard", icon: LayoutDashboard },
-    ]
-  },
-  {
-    name: "Modules",
-    items: [
-      { name: "Project Tracker", href: "/dashboard/projects", icon: Target },
-      { name: "Cost Estimator", href: "/dashboard/cost", icon: Calculator },
-      { name: "Safety Hub", href: "/dashboard/safety", icon: ShieldAlert },
-      { name: "Document Analyzer", href: "/dashboard/docs", icon: FileText },
-      { name: "Procurement", href: "/dashboard/procurement", icon: ShoppingCart },
-      { name: "Workforce", href: "/dashboard/workforce", icon: Users },
-      { name: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
-      { name: "Progress Vision", href: "/dashboard/progress", icon: Activity },
-      { name: "Tender Analyzer", href: "/dashboard/tender", icon: Search },
-      { name: "ML Admin", href: "/dashboard/ml-admin", icon: Brain },
-      { name: "Integration", href: "/dashboard/settings", icon: Settings },
-    ]
-  }
+const modules = [
+  { name: "Project Tracker", href: "/dashboard/projects", icon: Target },
+  { name: "Cost Estimator", href: "/dashboard/cost", icon: Calculator },
+  { name: "Safety Hub", href: "/dashboard/safety", icon: ShieldAlert },
+  { name: "Document Analyzer", href: "/dashboard/docs", icon: FileText },
+  { name: "Procurement", href: "/dashboard/procurement", icon: ShoppingCart },
+  { name: "Workforce", href: "/dashboard/workforce", icon: Users },
+  { name: "Maintenance", href: "/dashboard/maintenance", icon: Wrench },
+  { name: "Progress Vision", href: "/dashboard/progress", icon: Activity },
+  { name: "Tender Analyzer", href: "/dashboard/tender", icon: Search },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
   const pathname = location.pathname;
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [modulesOpen, setModulesOpen] = useState(true);
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <aside 
+    <aside
       className={cn(
-        "border-r border-border bg-white h-screen flex flex-col fixed left-0 top-0 transition-all duration-300 z-[100]",
+        "h-screen flex flex-col fixed left-0 top-0 transition-all duration-300 z-[100]",
+        "bg-slate-900 border-r border-slate-800",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
-      <div className={cn("p-6 flex items-center justify-between", isCollapsed && "px-4")}>
-        {!isCollapsed && (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center font-black text-primary-foreground text-lg shadow-sm">
-              C
-            </div>
-            <h1 className="text-sm font-black text-foreground tracking-tight">
-              CONSTRUCTION AI
-            </h1>
-          </div>
-        )}
-        {isCollapsed && (
-          <div className="w-10 h-10 rounded bg-primary flex items-center justify-center font-black text-primary-foreground text-xl shadow-sm mx-auto">
+      {/* Logo */}
+      <div className={cn("p-5 flex items-center justify-between border-b border-slate-800", isCollapsed && "px-4")}>
+        <Link to="/dashboard" className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-black text-white text-sm shadow-lg shadow-blue-500/20">
             C
           </div>
-        )}
-        <button 
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-sm font-black text-white tracking-tight leading-none">CONSTAI</h1>
+              <p className="text-[8px] font-bold text-blue-400 uppercase tracking-widest">Platform</p>
+            </div>
+          )}
+        </Link>
+        <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className={cn(
-            "p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground",
-            isCollapsed && "mt-4 mx-auto"
+            "p-1.5 rounded-lg hover:bg-slate-800 transition-colors text-slate-400 hover:text-white",
+            isCollapsed && "mx-auto mt-4"
           )}
         >
-          {isCollapsed ? <Menu className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+          {isCollapsed ? <Menu className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 scrollbar-hide">
-        {groups.map((group) => (
-          <div key={group.name} className="mb-6">
-            {!isCollapsed && (
-              <h2 className="px-6 text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest mb-3">
-                {group.name}
-              </h2>
+        {/* Dashboard */}
+        <div className="px-3 mb-1">
+          <Link
+            to="/dashboard"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all",
+              isActive("/dashboard") && pathname === "/dashboard"
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
             )}
-            <div className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href;
-                const isComingSoon = item.href.includes('/dashboard/') && !['/dashboard/projects', '/dashboard/ml-admin'].includes(item.href);
-                
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    title={isCollapsed ? item.name : ""}
-                    className={cn(
-                      "flex items-center justify-between px-6 py-3 text-sm font-bold transition-all relative group",
-                      isActive
-                        ? "text-primary bg-primary/5"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      {isActive && (
-                        <div className="absolute left-0 top-1 bottom-1 w-1 bg-primary rounded-r-full" />
-                      )}
-                      <item.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground")} />
-                      {!isCollapsed && <span>{item.name}</span>}
-                    </div>
-                    {!isCollapsed && isComingSoon && (
-                      <span className="text-[7px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 border border-slate-200 uppercase tracking-tighter">
-                        Soon
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
+          >
+            <LayoutDashboard className="w-4 h-4 shrink-0" />
+            {!isCollapsed && <span>Intelligence Hub</span>}
+          </Link>
+        </div>
+
+        {/* Modules Section */}
+        <div className="px-3 mt-4 mb-1">
+          <button
+            onClick={() => setModulesOpen(!modulesOpen)}
+            className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-widest hover:text-slate-300 transition-colors"
+          >
+            {!isCollapsed && <span>Modules</span>}
+            {!isCollapsed && (
+              <ChevronDown className={cn("w-3 h-3 transition-transform", modulesOpen && "rotate-180")} />
+            )}
+          </button>
+        </div>
+
+        {modulesOpen && (
+          <div className="space-y-0.5 px-3">
+            {modules.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  title={isCollapsed ? item.name : ""}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
+                    active
+                      ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
+                  )}
+                >
+                  <item.icon className={cn("w-4 h-4 shrink-0", active ? "text-blue-400" : "text-slate-500 group-hover:text-white")} />
+                  {!isCollapsed && <span>{item.name}</span>}
+                </Link>
+              );
+            })}
           </div>
-        ))}
+        )}
+
+        {/* Content Section */}
+        <div className="px-3 mt-6 mb-1">
+          {!isCollapsed && (
+            <span className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Content</span>
+          )}
+        </div>
+        <div className="space-y-0.5 px-3">
+          <Link
+            to="/dashboard/blog"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
+              isActive("/dashboard/blog")
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
+            )}
+          >
+            <BookOpen className="w-4 h-4 shrink-0 text-slate-500 group-hover:text-white" />
+            {!isCollapsed && <span>Blog</span>}
+          </Link>
+          <Link
+            to="/dashboard/news"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
+              isActive("/dashboard/news")
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
+            )}
+          >
+            <Newspaper className="w-4 h-4 shrink-0 text-slate-500 group-hover:text-white" />
+            {!isCollapsed && <span>News</span>}
+          </Link>
+        </div>
+
+        {/* Admin */}
+        <div className="px-3 mt-6 mb-1">
+          {!isCollapsed && (
+            <span className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Admin</span>
+          )}
+        </div>
+        <div className="space-y-0.5 px-3">
+          <Link
+            to="/dashboard/ml-admin"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
+              isActive("/dashboard/ml-admin")
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
+            )}
+          >
+            <Brain className="w-4 h-4 shrink-0 text-slate-500 group-hover:text-white" />
+            {!isCollapsed && <span>ML Admin</span>}
+          </Link>
+          <Link
+            to="/dashboard/settings"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
+              isActive("/dashboard/settings")
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent"
+            )}
+          >
+            <Settings className="w-4 h-4 shrink-0 text-slate-500 group-hover:text-white" />
+            {!isCollapsed && <span>Settings</span>}
+          </Link>
+        </div>
       </nav>
-      
-      <div className={cn("p-4 mt-auto border-t border-border flex items-center justify-center", isCollapsed && "px-2")}>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          {!isCollapsed && <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Construct_v4</span>}
+
+      {/* Footer */}
+      <div className="p-4 border-t border-slate-800">
+        <div className="flex items-center gap-2 px-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_6px_rgba(34,197,94,0.5)]" />
+          {!isCollapsed && (
+            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">System Online</span>
+          )}
         </div>
       </div>
     </aside>

@@ -1,193 +1,214 @@
 import { motion } from "framer-motion";
-import { 
-  Target, 
-  Calculator, 
-  ShieldAlert, 
-  FileText, 
-  ShoppingCart, 
-  Users, 
-  Wrench, 
-  Activity, 
-  Search, 
+import {
+  Target,
+  Calculator,
+  ShieldAlert,
+  FileText,
+  ShoppingCart,
+  Users,
+  Wrench,
+  Activity,
+  Search,
   Settings,
   ArrowUpRight,
-  Zap
+  Zap,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 
 const modules = [
   {
     id: "tracker",
     name: "Project Tracker",
-    description: "Fully implemented AI-powered delay prediction and portfolio risk analytics.",
+    description: "AI-powered delay prediction and portfolio risk analytics.",
     icon: Target,
     href: "/dashboard/projects",
-    status: "Active MVP",
-    color: "bg-blue-600",
-    lightColor: "bg-blue-50",
-    textColor: "text-blue-600",
+    status: "Live",
+    gradient: "from-blue-600 to-blue-700",
+    lightGlow: "bg-blue-50",
   },
   {
     id: "cost",
     name: "Cost Estimator",
-    description: "Labor-burden aware budget forecasting with Naira pricing intelligence.",
+    description: "Labor-burden aware budget forecasting with Naira pricing.",
     icon: Calculator,
     href: "/dashboard/cost",
     status: "Coming Soon",
-    color: "bg-emerald-600",
-    lightColor: "bg-emerald-50",
-    textColor: "text-emerald-600",
+    gradient: "from-emerald-600 to-emerald-700",
+    lightGlow: "bg-emerald-50",
   },
   {
     id: "safety",
     name: "Safety Hub",
-    description: "Real-time hazard detection and safety compliance monitoring for sites.",
+    description: "Real-time hazard detection and safety compliance monitoring.",
     icon: ShieldAlert,
     href: "/dashboard/safety",
     status: "Coming Soon",
-    color: "bg-amber-600",
-    lightColor: "bg-amber-50",
-    textColor: "text-amber-600",
+    gradient: "from-amber-600 to-amber-700",
+    lightGlow: "bg-amber-50",
   },
   {
     id: "docs",
     name: "Document Analyzer",
-    description: "AI-powered clause extraction and compliance scoring for contracts.",
+    description: "AI clause extraction and compliance scoring for contracts.",
     icon: FileText,
     href: "/dashboard/docs",
     status: "Coming Soon",
-    color: "bg-purple-600",
-    lightColor: "bg-purple-50",
-    textColor: "text-purple-600",
+    gradient: "from-purple-600 to-purple-700",
+    lightGlow: "bg-purple-50",
   },
   {
     id: "procurement",
     name: "Procurement Assistant",
-    description: "Supplier intelligence and materials price forecasting for Nigeria.",
+    description: "Supplier intelligence and materials price forecasting.",
     icon: ShoppingCart,
     href: "/dashboard/procurement",
     status: "Coming Soon",
-    color: "bg-rose-600",
-    lightColor: "bg-rose-50",
-    textColor: "text-rose-600",
+    gradient: "from-rose-600 to-rose-700",
+    lightGlow: "bg-rose-50",
   },
   {
     id: "workforce",
     name: "Workforce Scheduler",
-    description: "Shift optimization and idle rate reduction analytics for laborers.",
+    description: "Shift optimization and idle rate reduction analytics.",
     icon: Users,
     href: "/dashboard/workforce",
     status: "Coming Soon",
-    color: "bg-indigo-600",
-    lightColor: "bg-indigo-50",
-    textColor: "text-indigo-600",
+    gradient: "from-indigo-600 to-indigo-700",
+    lightGlow: "bg-indigo-50",
   },
   {
     id: "maintenance",
     name: "Maintenance Predictor",
-    description: "Equipment risk assessment and preventive schedules using ML.",
+    description: "Equipment risk assessment and preventive schedules.",
     icon: Wrench,
     href: "/dashboard/maintenance",
     status: "Coming Soon",
-    color: "bg-slate-600",
-    lightColor: "bg-slate-50",
-    textColor: "text-slate-600",
+    gradient: "from-slate-600 to-slate-700",
+    lightGlow: "bg-slate-50",
   },
   {
     id: "progress",
     name: "Progress Vision",
-    description: "Visual completion deviation analysis and automated site monitoring.",
+    description: "Visual completion deviation analysis and site monitoring.",
     icon: Activity,
     href: "/dashboard/progress",
     status: "Coming Soon",
-    color: "bg-cyan-600",
-    lightColor: "bg-cyan-50",
-    textColor: "text-cyan-600",
+    gradient: "from-cyan-600 to-cyan-700",
+    lightGlow: "bg-cyan-50",
   },
   {
     id: "tender",
     name: "Tender Analyzer",
-    description: "Risk phrase extraction and bid competitiveness scoring for RFPs.",
+    description: "Risk phrase extraction and bid competitiveness scoring.",
     icon: Search,
     href: "/dashboard/tender",
     status: "Coming Soon",
-    color: "bg-orange-600",
-    lightColor: "bg-orange-50",
-    textColor: "text-orange-600",
-  },
-  {
-    id: "settings",
-    name: "Integration Suite",
-    description: "Manage API keys, webhooks, and enterprise system connections.",
-    icon: Settings,
-    href: "/dashboard/settings",
-    status: "Coming Soon",
-    color: "bg-zinc-800",
-    lightColor: "bg-zinc-100",
-    textColor: "text-zinc-800",
+    gradient: "from-orange-600 to-orange-700",
+    lightGlow: "bg-orange-50",
   },
 ];
 
 export default function DashboardOverview() {
+  const { data: stats } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: async () => {
+      try {
+        const res = await api.get("/dashboard/stats");
+        return res.data;
+      } catch {
+        return null;
+      }
+    },
+  });
+
+  const statCards = [
+    { label: "Active Projects", value: stats?.active_projects ?? 0, icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "On Schedule", value: stats?.on_schedule ?? 0, icon: Clock, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { label: "At Risk", value: stats?.at_risk ?? 0, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Completed", value: stats?.completed ?? 0, icon: Zap, color: "text-purple-600", bg: "bg-purple-50" },
+  ];
+
   return (
-    <div className="space-y-12 pb-12 animate-in fade-in duration-700">
-      <header className="max-w-4xl">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full border border-primary/20">
-            Platform Vision v1.0
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-100">
-            <Zap className="w-3 h-3 fill-emerald-600" />
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="px-2.5 py-1 bg-blue-600/10 text-blue-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-blue-500/20">
+            Nigeria's AI Construction Platform
+          </span>
+          <span className="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-widest rounded-full border border-emerald-100 flex items-center gap-1">
+            <Zap className="w-3 h-3" />
             AI Core Active
-          </div>
+          </span>
         </div>
-        <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase leading-[0.9]">
-          ConstAI <span className="text-primary">Intelligence Hub</span>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+          Intelligence Hub
         </h1>
-        <p className="text-xl text-slate-500 font-medium mt-6 leading-relaxed">
-          Nigeria's first fully integrated AI construction platform. 
+        <p className="text-sm text-slate-500 mt-1">
           Manage risks, costs, and operations from a single predictive console.
         </p>
-      </header>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {statCards.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="bg-white rounded-xl border border-slate-200 p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-slate-400">{stat.label}</span>
+              <div className={`p-1.5 rounded-lg ${stat.bg}`}>
+                <stat.icon className={`w-3.5 h-3.5 ${stat.color}`} />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Modules Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {modules.map((module, index) => (
           <Link to={module.href} key={module.id}>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="h-full group relative overflow-hidden bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:shadow-2xl hover:shadow-slate-200 transition-all duration-500"
+              transition={{ delay: 0.2 + index * 0.04 }}
+              whileHover={{ y: -4 }}
+              className="group relative bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-slate-300 transition-all duration-200"
             >
-              {/* Background Glow */}
-              <div className={`absolute top-0 right-0 w-32 h-32 ${module.lightColor} blur-[80px] rounded-full -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex justify-between items-start mb-8">
-                  <div className={`w-14 h-14 rounded-2xl ${module.color} text-white flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform duration-500`}>
-                    <module.icon className="w-7 h-7" />
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                    module.status === "Active MVP" 
-                      ? "bg-primary/5 border-primary/20 text-primary" 
-                      : "bg-slate-100 border-slate-200 text-slate-400"
-                  }`}>
-                    {module.status}
-                  </div>
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-2.5 rounded-xl bg-gradient-to-br ${module.gradient} text-white shadow-lg`}>
+                  <module.icon className="w-5 h-5" />
                 </div>
-
-                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-3 group-hover:text-primary transition-colors">
-                  {module.name}
-                </h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8 flex-1">
-                  {module.description}
-                </p>
-
-                <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest group-hover:gap-4 transition-all">
-                  <span>Enter Module</span>
-                  <ArrowUpRight className="w-4 h-4" />
-                </div>
+                <span
+                  className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border ${
+                    module.status === "Live"
+                      ? "bg-blue-50 text-blue-600 border-blue-200"
+                      : "bg-slate-100 text-slate-400 border-slate-200"
+                  }`}
+                >
+                  {module.status}
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition-colors">
+                {module.name}
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                {module.description}
+              </p>
+              <div className="flex items-center gap-1 text-blue-600 font-semibold text-[11px] group-hover:gap-2 transition-all">
+                <span>Open</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </div>
             </motion.div>
           </Link>

@@ -11,6 +11,9 @@ import NotFoundPage from "./pages/NotFound";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import DocumentAnalyzer from "./pages/DocumentAnalyzer";
 import MLAdmin from "./pages/MLAdmin";
+import SettingsPage from "./pages/SettingsPage";
+import BlogPage from "./pages/BlogPage";
+import NewsPage from "./pages/NewsPage";
 import { useAuth } from "./components/auth-context";
 
 const ProtectedRoute = () => {
@@ -27,11 +30,11 @@ const ProtectedRoute = () => {
 
 const DashboardLayout = () => {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
-      <main className="flex-1 ml-64 min-h-screen flex flex-col bg-slate-50/50">
+      <main className="flex-1 ml-64 min-h-screen flex flex-col">
         <Header />
-        <div className="p-8 flex-1">
+        <div className="p-6 flex-1">
           <Outlet />
         </div>
       </main>
@@ -133,14 +136,16 @@ function App() {
               element={<MLAdmin />}
             />
             <Route
+              path="blog"
+              element={<BlogPage />}
+            />
+            <Route
+              path="news"
+              element={<NewsPage />}
+            />
+            <Route
               path="settings"
-              element={
-                <PlaceholderPage
-                  title="Integration Suite"
-                  description="Manage API keys, webhooks, and enterprise system connections."
-                  icon="settings"
-                />
-              }
+              element={<SettingsPage />}
             />
           </Route>
         </Route>
