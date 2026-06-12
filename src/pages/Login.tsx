@@ -3,11 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, User, Loader2, HardHat, ArrowRight } from "lucide-react";
 import api from "@/lib/api";
+import { useAuth } from "@/components/auth-context";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem("token")) {
@@ -27,6 +29,7 @@ export default function LoginPage() {
     try {
       const response = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", response.data.access_token);
+      setUser({ authenticated: true });
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
       const detail = err?.response?.data?.detail || "Unable to sign in. Check your credentials and try again.";
