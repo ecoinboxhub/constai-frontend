@@ -18,7 +18,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run build
+      - run: VITE_API_URL=https://constai-backend.onrender.com npm run build
 
       - name: Deploy to Vercel
         run: |
