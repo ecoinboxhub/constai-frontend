@@ -929,34 +929,61 @@ export function ProjectTracker() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.filter(p => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase())).map((project) => (
+            {projects.filter(p => !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.location.toLowerCase().includes(searchQuery.toLowerCase())).map((project) => {
+              const pred = predictions[project.id];
+              return (
               <motion.div
                 key={project.id}
                 whileHover={{ y: -4 }}
                 className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm group cursor-pointer"
               >
-                <div className="flex justify-between items-start mb-6">
+                <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-black text-slate-900 group-hover:text-primary transition-colors">{project.name}</h3>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{project.location} {project.state ? `- ${project.state}` : ''}</p>
                   </div>
-                  <div className={`px-2 py-1 rounded text-[9px] font-black uppercase border ${getRiskColor(project.risk_level)}`}>
-                    {project.risk_level} Risk
+                  <div className={`px-2.5 py-1 rounded text-[9px] font-black uppercase border ${
+                    pred ? getRiskColor(pred.risk_classification) : getRiskColor(project.risk_level)
+                  }`}>
+                    {pred ? pred.risk_classification : project.risk_level} Risk
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Completion</p>
-                    <p className="text-lg font-black text-slate-900">{project.completion_percentage.toFixed(1)}%</p>
+                {pred && (
+                  <div className="mb-4 p-3 rounded-xl bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-100/50">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="text-center">
+                        <div className="text-xs font-black" style={{ color: pred.delay_probability > 0.5 ? '#dc2626' : pred.delay_probability > 0.25 ? '#d97706' : '#059669' }}>
+                          {(pred.delay_probability * 100).toFixed(0)}%
+                        </div>
+                        <div className="text-[7px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Delay</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs font-black" style={{ color: pred.budget_overrun_probability > 0.5 ? '#dc2626' : pred.budget_overrun_probability > 0.25 ? '#d97706' : '#059669' }}>
+                          {(pred.budget_overrun_probability * 100).toFixed(0)}%
+                        </div>
+                        <div className="text-[7px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Budget</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xs font-black text-slate-900">{project.completion_percentage.toFixed(0)}%</div>
+                        <div className="text-[7px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Complete</div>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Delay Prob.</p>
-                    <p className="text-lg font-black text-primary">
-                      {predictions[project.id] ? `${(predictions[project.id].delay_probability * 100).toFixed(0)}%` : "N/A"}
-                    </p>
+                )}
+
+                {!pred && (
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Completion</p>
+                      <p className="text-lg font-black text-slate-900">{project.completion_percentage.toFixed(1)}%</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase mb-1">Delay Prob.</p>
+                      <p className="text-lg font-black text-primary">N/A</p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div className="flex gap-2">
@@ -966,7 +993,8 @@ export function ProjectTracker() {
                   <ChevronLeft className="w-4 h-4 text-slate-300 rotate-180" />
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
