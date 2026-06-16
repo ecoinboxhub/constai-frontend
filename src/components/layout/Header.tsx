@@ -21,7 +21,7 @@ export default function Header() {
     refetchInterval: 10000,
   });
 
-  const isOnline = health?.status === "ok";
+  const isOnline = health?.status === "ok" || health?.status === "operational";
 
   const handleLogout = () => {
     localStorage.removeItem("token");

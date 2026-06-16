@@ -167,7 +167,20 @@ export function ProjectTracker() {
 
   useEffect(() => {
     loadDashboard();
+    checkLLMHealth();
   }, []);
+
+  const checkLLMHealth = async () => {
+    try {
+      const res = await api.get("/ready");
+      const providers = res.data?.ai_providers;
+      if (providers && (providers.gemini || providers.groq || providers.openrouter)) {
+        setLlmConnected(true);
+      }
+    } catch {
+      // LLM health check failed, badge stays offline until first chat
+    }
+  };
 
   useEffect(() => {
     loadWeather();
@@ -246,8 +259,9 @@ export function ProjectTracker() {
       const res = await api.post("/project-tracker/chat", { message: chatInput, project_id: selectedChatProject });
       setChatMessages((prev) => [...prev, { role: "assistant", content: res.data.response }]);
       setLlmConnected(true);
-    } catch (err) {
-      setChatMessages((prev) => [...prev, { role: "assistant", content: "AI Assistant is currently offline." }]);
+    } catch (err: any) {
+      const is503 = err?.response?.status === 503;
+      setChatMessages((prev) => [...prev, { role: "assistant", content: is503 ? "AI service is temporarily unavailable. Please try again." : "AI Assistant is currently offline." }]);
     } finally {
       setChatLoading(false);
     }
