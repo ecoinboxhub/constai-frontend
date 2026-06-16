@@ -172,9 +172,9 @@ export function ProjectTracker() {
 
   const checkLLMHealth = async () => {
     try {
-      const res = await api.get("/ready");
-      const providers = res.data?.ai_providers;
-      if (providers && (providers.gemini || providers.groq || providers.openrouter)) {
+      const res = await fetch("https://constai-backend.onrender.com/ready");
+      const data = await res.json();
+      if (data?.ai_providers?.gemini || data?.ai_providers?.groq || data?.ai_providers?.openrouter) {
         setLlmConnected(true);
       }
     } catch {
