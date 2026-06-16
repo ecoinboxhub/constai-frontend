@@ -8,13 +8,20 @@ import RegisterPage from "./pages/Register";
 import ForgotPasswordPage from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPassword";
 import NotFoundPage from "./pages/NotFound";
-import PlaceholderPage from "./pages/PlaceholderPage";
 import DocumentAnalyzer from "./pages/DocumentAnalyzer";
 import MLAdmin from "./pages/MLAdmin";
+import CostEstimator from "./pages/CostEstimator";
+import SafetyHub from "./pages/SafetyHub";
+import ProcurementAssistant from "./pages/ProcurementAssistant";
+import WorkforceScheduler from "./pages/WorkforceScheduler";
+import MaintenancePredictor from "./pages/MaintenancePredictor";
+import ProgressVision from "./pages/ProgressVision";
+import TenderAnalyzer from "./pages/TenderAnalyzer";
 import SettingsPage from "./pages/SettingsPage";
 import BlogPage from "./pages/BlogPage";
 import NewsPage from "./pages/NewsPage";
 import { useAuth } from "./components/auth-context";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const ProtectedRoute = () => {
   const { user, loading } = useAuth();
@@ -35,7 +42,9 @@ const DashboardLayout = () => {
       <main className="flex-1 ml-64 min-h-screen flex flex-col">
         <Header />
         <div className="p-6 flex-1">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </main>
     </div>
@@ -57,80 +66,14 @@ function App() {
             <Route index element={<DashboardOverview />} />
             <Route path="tracker" element={<ProjectTracker />} />
             <Route path="projects" element={<ProjectTracker />} />
-            <Route
-              path="cost"
-              element={
-                <PlaceholderPage
-                  title="Cost Estimator"
-                  description="Labor-burden aware budget forecasting with Naira pricing."
-                  icon="cost"
-                />
-              }
-            />
-            <Route
-              path="safety"
-              element={
-                <PlaceholderPage
-                  title="Safety Hub"
-                  description="Real-time hazard detection and safety compliance monitoring."
-                  icon="safety"
-                />
-              }
-            />
-            <Route
-              path="docs"
-              element={<DocumentAnalyzer />}
-            />
-            <Route
-              path="procurement"
-              element={
-                <PlaceholderPage
-                  title="Procurement Assistant"
-                  description="Supplier intelligence and materials price forecasting."
-                  icon="procurement"
-                />
-              }
-            />
-            <Route
-              path="workforce"
-              element={
-                <PlaceholderPage
-                  title="Workforce Scheduler"
-                  description="Shift optimization and idle rate reduction analytics."
-                  icon="workforce"
-                />
-              }
-            />
-            <Route
-              path="maintenance"
-              element={
-                <PlaceholderPage
-                  title="Maintenance Predictor"
-                  description="Equipment risk assessment and preventive schedules."
-                  icon="maintenance"
-                />
-              }
-            />
-            <Route
-              path="progress"
-              element={
-                <PlaceholderPage
-                  title="Progress Vision"
-                  description="Visual completion deviation analysis and site monitoring."
-                  icon="progress"
-                />
-              }
-            />
-            <Route
-              path="tender"
-              element={
-                <PlaceholderPage
-                  title="Tender Analyzer"
-                  description="Risk phrase extraction and bid competitiveness scoring."
-                  icon="tender"
-                />
-              }
-            />
+            <Route path="cost" element={<CostEstimator />} />
+            <Route path="safety" element={<SafetyHub />} />
+            <Route path="docs" element={<DocumentAnalyzer />} />
+            <Route path="procurement" element={<ProcurementAssistant />} />
+            <Route path="workforce" element={<WorkforceScheduler />} />
+            <Route path="maintenance" element={<MaintenancePredictor />} />
+            <Route path="progress" element={<ProgressVision />} />
+            <Route path="tender" element={<TenderAnalyzer />} />
             <Route
               path="ml-admin"
               element={<MLAdmin />}

@@ -18,6 +18,7 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import api from "@/lib/api";
 import { trackUIEvent } from "@/lib/uiEventTracker";
+import { ErrorState, EmptyState } from "@/components/ui/States";
 
 // Types
 interface Project {
@@ -162,7 +163,7 @@ export function ProjectTracker() {
   const [selectedCity, setSelectedCity] = useState("Lagos");
   const [weather, setWeather] = useState<any>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
-  const [selectedChatProject] = useState<number>(1);
+  const [selectedChatProject, setSelectedChatProject] = useState<number>(1);
 
   useEffect(() => {
     loadDashboard();
@@ -171,6 +172,12 @@ export function ProjectTracker() {
   useEffect(() => {
     loadWeather();
   }, [selectedCity]);
+
+  useEffect(() => {
+    if (projects.length > 0 && selectedChatProject === 1) {
+      setSelectedChatProject(projects[0].id);
+    }
+  }, [projects]);
 
   const loadWeather = async () => {
     console.log(`[Frontend] Fetching weather for: ${selectedCity}`);
@@ -236,7 +243,7 @@ export function ProjectTracker() {
     setChatInput("");
     setChatLoading(true);
     try {
-      const res = await api.post("/project-tracker/chat", { message: chatInput });
+      const res = await api.post("/project-tracker/chat", { message: chatInput, project_id: selectedChatProject });
       setChatMessages((prev) => [...prev, { role: "assistant", content: res.data.response }]);
       setLlmConnected(true);
     } catch (err) {
@@ -377,8 +384,7 @@ export function ProjectTracker() {
     setChatMessages((prev) => [...prev, { role: "user", content: `[RAG QUERY] ${chatInput}` }]);
     setChatLoading(true);
     try {
-      const pid = selectedChatProject;
-      const res = await api.post("/project-tracker/rag/query", { project_id: pid, question: chatInput });
+      const res = await api.post("/project-tracker/rag/query", { project_id: selectedChatProject, question: chatInput });
       setChatMessages((prev) => [...prev, { role: "assistant", content: res.data.answer }]);
       setChatInput("");
     } catch (err) {
@@ -503,23 +509,10 @@ export function ProjectTracker() {
       )}
 
       {!loading && !metrics && (
-        <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4">
-           <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-amber-500" />
-           </div>
-           <div>
-              <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Analytics Connection Offline</h3>
-              <p className="text-sm text-slate-500 font-medium max-w-xs mx-auto">
-                 We're unable to reach the project intelligence engine. Please check your network or try refreshing.
-              </p>
-           </div>
-           <button 
-             onClick={() => loadDashboard()}
-             className="px-6 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
-           >
-             RETRY CONNECTION
-           </button>
-        </div>
+        <ErrorState
+          message="We're unable to reach the project intelligence engine. Please check your network or try refreshing."
+          onRetry={() => loadDashboard()}
+        />
       )}
 
       {activeTab === "dashboard" && metrics && (
@@ -694,7 +687,7 @@ export function ProjectTracker() {
                     </div>
                   ))}
                   {projects.filter(p => p.risk_level.toLowerCase() === "high").length === 0 && (
-                    <div className="text-center py-4 text-xs font-bold text-slate-400">No critical alerts detected</div>
+                    <EmptyState title="All Clear" description="No critical alerts detected" />
                   )}
                 </div>
               </div>
@@ -1160,6 +1153,15 @@ export function ProjectTracker() {
                 )}
               </div>
 
+              <div className="flex items-center gap-2 mb-2">
+                <select
+                  value={selectedChatProject}
+                  onChange={(e) => setSelectedChatProject(Number(e.target.value))}
+                  className="bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                  {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
               <div className="flex gap-3 bg-slate-50 p-2 rounded-2xl border border-slate-200">
                 <input
                   type="text"

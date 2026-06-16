@@ -15,10 +15,12 @@ import {
   TrendingUp,
   Clock,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { LoadingSkeleton, ErrorState } from "@/components/ui/States";
 
 const modules = [
   {
@@ -37,7 +39,7 @@ const modules = [
     description: "Labor-burden aware budget forecasting with Naira pricing.",
     icon: Calculator,
     href: "/dashboard/cost",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-emerald-600 to-emerald-700",
     lightGlow: "bg-emerald-50",
   },
@@ -47,7 +49,7 @@ const modules = [
     description: "Real-time hazard detection and safety compliance monitoring.",
     icon: ShieldAlert,
     href: "/dashboard/safety",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-amber-600 to-amber-700",
     lightGlow: "bg-amber-50",
   },
@@ -57,7 +59,7 @@ const modules = [
     description: "AI clause extraction and compliance scoring for contracts.",
     icon: FileText,
     href: "/dashboard/docs",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-purple-600 to-purple-700",
     lightGlow: "bg-purple-50",
   },
@@ -67,7 +69,7 @@ const modules = [
     description: "Supplier intelligence and materials price forecasting.",
     icon: ShoppingCart,
     href: "/dashboard/procurement",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-rose-600 to-rose-700",
     lightGlow: "bg-rose-50",
   },
@@ -77,7 +79,7 @@ const modules = [
     description: "Shift optimization and idle rate reduction analytics.",
     icon: Users,
     href: "/dashboard/workforce",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-indigo-600 to-indigo-700",
     lightGlow: "bg-indigo-50",
   },
@@ -87,7 +89,7 @@ const modules = [
     description: "Equipment risk assessment and preventive schedules.",
     icon: Wrench,
     href: "/dashboard/maintenance",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-slate-600 to-slate-700",
     lightGlow: "bg-slate-50",
   },
@@ -97,7 +99,7 @@ const modules = [
     description: "Visual completion deviation analysis and site monitoring.",
     icon: Activity,
     href: "/dashboard/progress",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-cyan-600 to-cyan-700",
     lightGlow: "bg-cyan-50",
   },
@@ -107,14 +109,14 @@ const modules = [
     description: "Risk phrase extraction and bid competitiveness scoring.",
     icon: Search,
     href: "/dashboard/tender",
-    status: "Coming Soon",
+    status: "Live",
     gradient: "from-orange-600 to-orange-700",
     lightGlow: "bg-orange-50",
   },
 ];
 
 export default function DashboardOverview() {
-  const { data: stats } = useQuery({
+  const { data: stats, isLoading, isError, refetch } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
       try {
@@ -132,6 +134,9 @@ export default function DashboardOverview() {
     { label: "At Risk", value: stats?.at_risk ?? 0, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "Completed", value: stats?.completed ?? 0, icon: Zap, color: "text-purple-600", bg: "bg-purple-50" },
   ];
+
+  if (isLoading) return <LoadingSkeleton lines={4} />;
+  if (isError) return <ErrorState message="Failed to load dashboard stats." onRetry={() => refetch()} />;
 
   return (
     <div className="space-y-8">
