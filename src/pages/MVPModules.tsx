@@ -206,35 +206,41 @@ export function ProjectTracker() {
     }
   };
 
-  const loadDashboard = async () => {
+  const loadDashboard = async (retries = 2) => {
     console.log("[Frontend] Loading dashboard metrics and projects...");
     setLoading(true);
-    try {
-      const [projectsRes, metricsRes, workforceRes] = await Promise.all([
-        api.get("/project-tracker/projects"),
-        api.get("/project-tracker/analytics"),
-        api.get("/workforce").catch(() => ({ data: [] }))
-      ]);
-      console.log("[Frontend] Projects loaded:", projectsRes.data.length);
-      console.log("[Frontend] Metrics loaded:", metricsRes.data);
-      
-      setProjects(projectsRes.data);
-      setMetrics(metricsRes.data);
-      setWorkforce(workforceRes.data);
+    let loaded = false;
+    for (let attempt = 0; attempt <= retries && !loaded; attempt++) {
+      try {
+        const [projectsRes, metricsRes, workforceRes] = await Promise.all([
+          api.get("/project-tracker/projects"),
+          api.get("/project-tracker/analytics"),
+          api.get("/workforce").catch(() => ({ data: [] }))
+        ]);
+        console.log("[Frontend] Projects loaded:", projectsRes.data.length);
+        console.log("[Frontend] Metrics loaded:", metricsRes.data);
+        
+        setProjects(projectsRes.data);
+        setMetrics(metricsRes.data);
+        setWorkforce(workforceRes.data);
 
-      const preds: Record<number, Prediction> = {};
-      for (const project of projectsRes.data) {
-        try {
-          const predRes = await api.get(`/project-tracker/predictions/${project.id}`);
-          preds[project.id] = predRes.data;
-        } catch { /* skip */ }
+        const preds: Record<number, Prediction> = {};
+        for (const project of projectsRes.data) {
+          try {
+            const predRes = await api.get(`/project-tracker/predictions/${project.id}`);
+            preds[project.id] = predRes.data;
+          } catch { /* skip */ }
+        }
+        setPredictions(preds);
+        loaded = true;
+      } catch (err) {
+        console.error(`[Frontend] Failed to load dashboard (attempt ${attempt + 1}/${retries + 1}):`, err);
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+        }
       }
-      setPredictions(preds);
-    } catch (err) {
-      console.error("[Frontend] Failed to load dashboard:", err);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleQuickPredict = async () => {
@@ -256,12 +262,22 @@ export function ProjectTracker() {
     setChatInput("");
     setChatLoading(true);
     try {
-      const res = await api.post("/project-tracker/chat", { message: chatInput, project_id: selectedChatProject });
+      const projectId = projects.length > 0 ? selectedChatProject : null;
+      const res = await api.post("/project-tracker/chat", { message: chatInput, project_id: projectId });
       setChatMessages((prev) => [...prev, { role: "assistant", content: res.data.response }]);
       setLlmConnected(true);
     } catch (err: any) {
-      const is503 = err?.response?.status === 503;
-      setChatMessages((prev) => [...prev, { role: "assistant", content: is503 ? "AI service is temporarily unavailable. Please try again." : "AI Assistant is currently offline." }]);
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      if (status === 503) {
+        setChatMessages((prev) => [...prev, { role: "assistant", content: "AI service is temporarily unavailable. Please try again." }]);
+      } else if (status === 401) {
+        setChatMessages((prev) => [...prev, { role: "assistant", content: "Session expired. Please log in again." }]);
+      } else if (detail?.includes("Project not found")) {
+        setChatMessages((prev) => [...prev, { role: "assistant", content: "Selected project was not found. Try asking without a specific project." }]);
+      } else {
+        setChatMessages((prev) => [...prev, { role: "assistant", content: "AI Assistant is currently offline." }]);
+      }
     } finally {
       setChatLoading(false);
     }
@@ -395,6 +411,11 @@ export function ProjectTracker() {
 
   const handleRagQuery = async () => {
     if (!chatInput.trim()) return;
+    if (projects.length === 0) {
+      setChatMessages((prev) => [...prev, { role: "user", content: `[RAG QUERY] ${chatInput}` }, { role: "assistant", content: "Load a project first before searching the knowledge base." }]);
+      setChatInput("");
+      return;
+    }
     setChatMessages((prev) => [...prev, { role: "user", content: `[RAG QUERY] ${chatInput}` }]);
     setChatLoading(true);
     try {

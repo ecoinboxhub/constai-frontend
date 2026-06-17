@@ -46,7 +46,7 @@ export default function TenderAnalyzer() {
     if (!tenderText.trim()) return;
     setAnalyzing(true);
     try {
-      const res = await api.post("/project-tracker/chat", { message: `Analyze this tender document: ${tenderText}`, project_id: 1 });
+      const res = await api.post("/project-tracker/chat", { message: `Analyze this tender document: ${tenderText}`, project_id: null });
       setResults((prev) => [{ response: res.data.response, confidence_score: 0.85 }, ...prev]);
     } catch {
       setResults((prev) => [MOCK_ANALYSIS, ...prev]);
